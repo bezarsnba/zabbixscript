@@ -68,7 +68,7 @@ fi
 
 message "Instalando dependencias";
 if [ $INSTALL_PKG == "S" ]; then
-  sudo apt -y install libmysqlclient-dev gcc libxml2-utils libxml2-dev libsnmp-dev libevent-dev libcurl4-gnutls-dev libpcre3-dev make wget curl
+  sudo apt -y install libmysqlclient-dev gcc libxml2-utils libxml2-dev libsnmp-dev libevent-dev libcurl4-gnutls-dev libpcre3-dev make wget curl fping
 fi
 
 message "Instalando Apache e PHP";
@@ -162,6 +162,8 @@ if [ $SERVER == "S" ]; then
   sudo ./configure --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2
   sudo make install
   sudo curl -L "https://raw.githubusercontent.com/bezarsnba/zabbixscript/master/zabbix-server" -o /etc/init.d/zabbix-server
+  sudo curl -L "https://raw.githubusercontent.com/bezarsnba/zabbixscript/master/zabbix_server.conf" -o /usr/local/etc/zabbix_server.conf
+
   sudo chmod 755 /etc/init.d/zabbix-server
   sudo update-rc.d zabbix-server defaults
   sudo systemctl enable zabbix-server
