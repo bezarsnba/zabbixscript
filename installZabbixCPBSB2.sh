@@ -26,14 +26,14 @@ function message() {
 }
 
 # Enable install parts (for debug propouses) -----------------------------------
-INSTALL_MYSQL="N";
-INSTALL_PKG="N";
-INSTALL_HTTP="N";
-DOWNLOAD_SOURCE="N";
+INSTALL_MYSQL="S";
+INSTALL_PKG="S";
+INSTALL_HTTP="S";
+DOWNLOAD_SOURCE="S";
 
-INSTALL_ZBX_DB="N";
-CONFIGURE_APACHE="N";
-CREATE_USER="N";
+INSTALL_ZBX_DB="S";
+CONFIGURE_APACHE="S";
+CREATE_USER="S";
 CREATE_FRONTEND="S";
 SERVER="S";
 SERVICES="S";
@@ -150,7 +150,8 @@ global \$DB;
 
 \$IMAGE_FORMAT_DEFAULT	= IMAGE_FORMAT_PNG;
 ?>
-" > $WWW_PATH/conf/zabbix.conf.php;
+" > /tmp/install/zabbix.conf.php;
+  sudo mv /tmp/install/zabbix.conf.php $WWW_PATH/conf/zabbix.conf.php
   sudo chmod 755 "$WWW_PATH/conf/zabbix.conf.php";
   sudo chown -R www-data $WWW_PATH
 fi
@@ -161,15 +162,18 @@ if [ $SERVER == "S" ]; then
   sudo ./configure --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2
   sudo make install
   sudo curl -L "https://raw.githubusercontent.com/bezarsnba/zabbixscript/master/zabbix-server" -o /etc/init.d/zabbix-server
-  sudo curl -L "https://raw.githubusercontent.com/bezarsnba/zabbixscript/master/zabbix-agent" -o /etc/init.d/zabbix-agent
   sudo chmod 755 /etc/init.d/zabbix-server
   sudo update-rc.d zabbix-server defaults
   sudo systemctl enable zabbix-server
-  sudo systemctl enable zabbix-server
+  sudo curl -L "https://raw.githubusercontent.com/bezarsnba/zabbixscript/master/zabbix-agent" -o /etc/init.d/zabbix-agent
+  sudo chmod 755 /etc/init.d/zabbix-agent
+  sudo update-rc.d zabbix-agent defaults
+  sudo systemctl enable zabbix-agent
 fi
 
 if [ $SERVICES == "S" ]; then
   message "Iniciando Zabbix Server";
-  sudo systemctl start zabbix-server
+  sudo systemctl restart zabbix-server
+  sudo systemctl restart zabbix-agent
 fi
 exit;
